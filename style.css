@@ -1,0 +1,25 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.dark-theme {
+    color: white;
+    background-color: rgb(22, 21, 21);
+}
+
+.section_area_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 20px;
+}
+
+img {
+    width: 100%;
+}
+
+
+/* .section_grid_item {
+    text-align: center;
+} */
