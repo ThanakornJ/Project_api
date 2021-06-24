@@ -1,14 +1,24 @@
     // ----------------------------------- Mylist Page -----------------------------------------------------------------------------------------------\\
 
-    //โหลด html ให้แสดง
+    fetch('https://se104-project-backend.du.r.appspot.com/movies/632110334')
+        .then((response) => {
+            return response.json()
+        }).then((data => {
+            MyList(data)
+        }))
+        //โหลด html ให้แสดง
+
+
     function onLoad() {
-
-        // movieSearch.style.display = 'none';
-        hideAll();
-        // movieShow.style.display = 'block';
-
+        ss.style.display = 'none';
 
     }
+    // movieSearch.style.display = 'none';
+
+    // movieShow.style.display = 'block';
+
+
+
 
     const movieList = document.querySelector('.movie-list');
 
@@ -18,18 +28,19 @@
         const movieImg = document.createElement('img');
         movieImg.classList.add('movie-img');
         movieImg.src = movie.image_url;
-        const fullnameText = document.createElement('h3');
+        const fullnameText = document.createElement('h4');
         fullnameText.classList.add('movie-name');
         fullnameText.innerHTML = movie.title;
         const buttonAdd = document.createElement('button');
         buttonAdd.classList.add('btn');
-        buttonAdd.classList.add('btn-danger')
+        buttonAdd.classList.add('btn-secondary')
         buttonAdd.classList.add('mt-4')
+
         buttonAdd.setAttribute('type', 'button');
         buttonAdd.innerHTML = 'Double Click To Add';
         movieItem.append(fullnameText, movieImg, buttonAdd);
         movieList.append(movieItem);
-        buttonAdd.addEventListener('dblclick', function() {
+        buttonAdd.addEventListener('dblclick', () => {
             console.log(data)
             var r = confirm(`Add ${movie.title} to MyList`);
             if (r == true) {
@@ -37,59 +48,98 @@
             }
         })
     }
+    // เพิ่มข้อมูล 
+
+
+    function addtoMylistToDB(movie) {
+        let addDataMovie = `{"url":"${movie.url}","image_url":"${movie.image_url}","title":"${movie.title}","synopsis":"${movie.synopsis}","type":"${movie.type}","episodes":"${movie.episodes}","score":"${movie.score}","rated":"${movie.rated}","id":"${movie.id}"}`
+        fetch('https://se104-project-backend.du.r.appspot.com/movies', {
+            method: 'POST',
+            headers: {
+                'content-Type': 'application/json'
+
+            },
+
+
+            body: `{"id":"632110338","movie":${addDataMovie}}`
+
+        })
+
+        .then((response) => {
+            if (response.status === 200) {
+                return response.json()
+            } else {
+                throw Error(response.statusText)
+            }
+        }).then((data => {
+                alert('100%')
+            }).catch(error => {
+
+                alert('0%');
+
+
+            })
+
+
+
+        )
+    }
+
+
+
+
+
+    function MyList(dataList) {
+
+        for (data of dataList) {
+
+            myMovie(data)
+        }
+    }
+
 
     // แสดงข้อมูล ในฐานข้อมูล
-    function add2Movie(movie) {
+    const movieListme = document.querySelector('.movie-list-me')
+
+    function myMovie(data) {
         const movieItem = document.createElement('movie-item');
         const movieImg = document.createElement('img');
         movieImg.classList.add('movie-img');
-        movieImg.src = movie.image_url;
+        movieImg.src = data.image_url;
         const fullnameText = document.createElement('h3');
         fullnameText.classList.add('movie-name');
-        fullnameText.innerHTML = movie.title;
-        movieItem.append(fullnameText, movieImg);
+        fullnameText.innerHTML = data.title;
+
+        const buttonAdd = document.createElement('button');
+        buttonAdd.classList.add('btn');
+        buttonAdd.classList.add('btn-secondary')
+        buttonAdd.classList.add('mt-4')
+        buttonAdd.setAttribute('type', 'button');
+        buttonAdd.innerHTML = 'Detail';
+
+        buttonAdd.addEventListener('click', () => {
+            console.log(data)
+
+
+
+        })
+
+        const buttonDelete = document.createElement('button');
+        buttonDelete.classList.add('btn');
+        buttonDelete.classList.add('btn-danger')
+        buttonDelete.classList.add('mt-4')
+        buttonDelete.setAttribute('type', 'button');
+        buttonDelete.innerHTML = 'Delete';
+        buttonDelete.addEventListener('dblclick', () => {
+            console.log(data)
+            var r = confirm(`Delete ${movie.title} to MyList`);
+            if (r == true) {
+                addtoMylistToDB(data)
+            }
+        })
+        movieItem.append(fullnameText, movieImg, buttonAdd, buttonDelete);
         movieList.append(movieItem);
-    }
-    // เพิ่มข้อมูล 
-    function addtoMylistToDB(data) {
-        fetch('https://se104-project-backend.du.r.appspot.com/movies', {
-                method: 'POST',
-                headers: {
-                    'movie': {
-                        // "url": `${data.url}`,
-                        // "image_url": `${data.image_url}`,
-                        // "title": `${data.title}`,
-                        // "synopsis": `${data.synopsis}`,
-                        // "type": `${data.type}`,
-                        // "episodes": data.episodes,
-                        // "score": data.score,
-                        // "rated": `${data.rated}`,
-
-
-
-
-                        'url': `https://myanimelist.net/anime/10396/Ben-To`,
-                        'image_url': `https://cdn.myanimelist.net/images/anime/12/73984.jpg?s=fae35d639922f1987b76ef8962779c10`,
-                        'title': `Ben-To`,
-                        'synopsis': `The supermarket is an important building in any city, for they provide a convenient way to purchase a variety of food in a family-friendly, safe environment. However, these stores changes in the blink...`,
-                        'type': `TV`,
-                        'episodes': 12,
-                        'score': 7.25,
-                        'rated': `PG-13`,
-                    }
-
-                },
-                body: JSON.stringify(data)
-            })
-            .then((response) => {
-                if (response.status === 200) {
-                    return response.json()
-                } else {
-                    throw Error(response.statusText)
-                }
-            }).then((data => {
-                console.log('success', data)
-            }))
+        tableBodyMe.appendChild(movieItem)
     }
 
 
@@ -97,22 +147,19 @@
 
 
 
-    function MyList(data) {
 
-        for (data of dataList.results) {
-            addMovie(data)
-        }
-    }
     // Showdata
 
-    function showdataMovie() {
-        fetch('https://se104-project-backend.du.r.appspot.com/movies/601232100')
-            .then((response) => {
-                return response.json()
-            }).then((data => {
-                MyList(data)
-            }))
-    }
+    // function showdataMovie() {
+    //     fetch('https://se104-project-backend.du.r.appspot.com/movies/601232100', {
+    //             method: 'GET'
+    //         })
+    //         .then((response) => {
+    //             return response.json()
+    //         }).then((data => {
+    //             MyList(data)
+    //         }))
+    // }
 
     // change Themes
 
@@ -123,13 +170,24 @@
         body.classList.toggle('dark-theme');
     });
 
+
+
+
+
+
+
+
+
     // ----------------------------------- Home Page หน้าที่ 1 -----------------------------------------------------------------------------------------------\\
     //หนังที่เลือก
     const movieShow = document.querySelector('.movie-list-me')
     const homePage = document.getElementById('homePage');
     homePage.addEventListener('click', () => {
         hideAll();
-        movieShow.style.display = 'block';
+        // onLoad();
+        document.querySelector('.headx').style.display = 'block';
+        xx.style.display = 'block';
+        movieShow.style.display = 'grid';
 
 
 
@@ -141,8 +199,10 @@
     const listPage = document.getElementById('listPage');
     listPage.addEventListener('click', () => {
         hideAll();
+        xx.style.display = 'none';
         movieSearch.style.display = 'block';
         ss.style.display = 'block';
+        document.querySelector('.headx').style.display = 'none';
 
     })
 
@@ -168,16 +228,34 @@
             addMovie(data)
         }
     }
-
+    // delete
+    function deleteMovie(id) {
+        fetch(`https://se104-project-backend.du.r.appspot.com/movie?id=632110358&&movieId=${id}`, {
+            method: 'DELETE'
+        }).then(response => {
+            if (response.status === 200) {
+                return response.json()
+            } else {
+                throw Error(response.statusText)
+            }
+        }).then(data => {
+            alert(`${data.title} is now delete`)
+            onLoad()
+        }).catch(error => {
+            alert('Error')
+        })
+    }
 
 
 
     const ss = document.querySelector('.ss');
+    const xx = document.querySelector('.xx');
 
     function hideAll() {
         ss.style.display = 'none';
         movieShow.style.display = 'none';
         movieSearch.style.display = 'none';
+        xx.style.display = 'none';
     }
 
     //
